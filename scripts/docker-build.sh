@@ -42,8 +42,6 @@ function showUsageAndExit() {
 
   echoBold "Options:"
   echo
-  echo -en "  -v\t"
-  echo "[REQUIRED] Product version of $(echo $product_name | awk '{print toupper($0)}')"
   echo -en "  -l\t"
   echo "[OPTIONAL] '|' separated $(echo $product_name | awk '{print toupper($0)}') profiles to build. \"default\" is selected if no value is specified."
   echo -en "  -i\t"
@@ -101,7 +99,7 @@ provision_method="default"
 overwrite_v='n'
 platform='default'
 
-while getopts :r:n:v:d:l:i:o:e:t:s:m:qy FLAG; do
+while getopts :r:n:v:d:l:i:o:e:t:s:m:q:y:p FLAG; do
   case $FLAG in
     r)
       provision_method=$OPTARG
@@ -142,6 +140,9 @@ while getopts :r:n:v:d:l:i:o:e:t:s:m:qy FLAG; do
     m)
       module_name=$OPTARG
       ;;
+    p)
+      pattern_no=$OPTARG
+      ;;
     \?)
       showUsageAndExit
       ;;
@@ -168,6 +169,10 @@ fi
 
 if [[ -z $module_name ]]; then
   module_name="${product_name}"
+fi
+
+if [[ -z $pattern_no ]]; then
+  pattern_no="1"
 fi
 
 provisioning_dir="${self_path}/../provision"

@@ -42,10 +42,11 @@ function validateProductEnvironment() {
 # $1 module name = wso2esb
 # $2 product version = 4.9.0
 # $3 product environment = dev
-function validateProductVersion() {
-    ver_dir="${PUPPET_HOME}/hieradata/${3}/wso2/${1}/${2}"
-    if [ ! -d "$ver_dir" ]; then
-        echoError "Provided product version ${1}:${2} doesn't exist in PUPPET_HOME: ${PUPPET_HOME}. Available versions are,"
+# $4 pattern number = 1
+function validateDeploymentPattern() {
+    pattern_dir="${PUPPET_HOME}/hieradata/${3}/wso2/${1}/pattern-${4}"
+    if [ ! -d "$pattern_dir" ]; then
+        echoError "Provided deployment pattern ${1}:${2}-pattern-${4} doesn't exist in PUPPET_HOME: ${PUPPET_HOME}. Available versions are,"
         listFiles "${PUPPET_HOME}/hieradata/${3}/wso2/${1}/"
         echo
         exit 1
@@ -56,13 +57,13 @@ function validateProductVersion() {
 # $2 product version = 4.9.0
 # $3 product profile list = 'default|worker|manager'
 # $4 product environment = dev
-# $5 platform = default
+# $5 pattern number = 1
 function validateProfile() {
     invalidFound=false
     IFS='|' read -r -a array <<< "${3}"
     for profile in "${array[@]}"
     do
-        profile_yaml="${PUPPET_HOME}/hieradata/${4}/wso2/${1}/${2}/${5}/${profile}.yaml"
+        profile_yaml="${PUPPET_HOME}/hieradata/${4}/wso2/${1}/pattern-${5}/${profile}.yaml"
         echo "profile yaml:${profile_yaml}"
         if [ ! -e "${profile_yaml}" ] || [ ! -s "${profile_yaml}" ]
         then
@@ -73,21 +74,7 @@ function validateProfile() {
     if [ "${invalidFound}" == true ]
     then
         echoError "One or more provided product profiles ${1}:${2}-[${3}] do not exist in PUPPET_HOME: ${PUPPET_HOME}. Available profiles are,"
-        listFiles "${PUPPET_HOME}/hieradata/${4}/wso2/${1}/${2}/${5}"
-        echo
-         exit 1
-    fi
-}
-
-# $1 module name = wso2esb
-# $2 product version = 4.9.0
-# $3 product environment = dev
-# $4 platform = default
-function validatePlatform() {
-    platform_dir="${PUPPET_HOME}/hieradata/${3}/wso2/${1}/${2}/${4}"
-    if [ ! -d "$platform_dir" ]; then
-        echoError "Provided platform ${1}:${2}:${4} doesn't exist in PUPPET_HOME: ${PUPPET_HOME}. Available platforms are,"
-        listDirectories "${PUPPET_HOME}/hieradata/${3}/wso2/${1}/${2}"
+        listFiles "${PUPPET_HOME}/hieradata/${4}/wso2/${1}/pattern-${5}"
         echo
         exit 1
     fi
@@ -114,14 +101,11 @@ function validateNeededPacks() {
 # check if provided product environment exists in PUPPET_HOME
 validateProductEnvironment "${product_env}"
 
-# check if provided product version exists in PUPPET_HOME
-validateProductVersion "${module_name}" "${product_version}" "${product_env}"
-
-# check if provided platform exists in PUPPET_HOME
-validatePlatform "${module_name}" "${product_version}" "${product_env}" "${platform}"
+#check if provided deployment pattern exists in PUPPET_HOME
+validateDeploymentPattern "${module_name}" "${product_version}" "${product_env}" "${pattern_no}"
 
 # check if provided profile exists in PUPPET_HOME
-validateProfile "${module_name}" "${product_version}" "${product_profiles}" "${product_env}" "${platform}"
+validateProfile "${module_name}" "${product_version}" "${product_profiles}" "${product_env}" "${pattern_no}"
 
 # check if packs are copied to PUPPET_HOME
 validateNeededPacks "${module_name}" "${product_name}" "${product_version}"
