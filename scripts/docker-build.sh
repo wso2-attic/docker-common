@@ -328,6 +328,7 @@ for profile in "${profiles_array[@]}"; do
                 --build-arg WSO2_SERVER_VERSION=\"${product_version}\" \
                 --build-arg WSO2_SERVER_PROFILE=\"${profile}\" \
                 --build-arg WSO2_ENVIRONMENT=\"${product_env}\" \
+                --build-arg WSO2_DEPLOYMENT_PATTERN=\"${pattern_no}\" \
                 --build-arg HTTP_PACK_SERVER=\"${http_server_address}\" \
                 --build-arg PLATFORM=\"${platform}\" \
                 -t \"${image_id}\" \"${dockerfile_path}\""

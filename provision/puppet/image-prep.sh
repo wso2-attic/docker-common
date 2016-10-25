@@ -84,15 +84,19 @@ function validateProfile() {
 # $2 product name = wso2esb
 # $3 product version = 4.9.0
 function validateNeededPacks() {
-    base_files_folder="${PUPPET_HOME}/modules/wso2base/files"
-    jdks_found=$(find $base_files_folder -name "jdk*.tar.gz")
-    pack_path="${PUPPET_HOME}/modules/${1}/files/${2}-${3}.zip"
-    if [ -z $jdks_found ]; then
-        echoError "A JDK was not found. Copy the JDK in to ${base_files_folder}."
+    local base_files_dir="${PUPPET_HOME}/modules/wso2base/files"
+    if [ -z $(find ${base_files_dir} -name "jdk*.tar.gz") ]; then
+        echoError "A JDK was not found. Copy the JDK in to ${base_files_dir}."
         exit 1
-    else
-        if [ ! -e $pack_path ]; then
-            echoError "Product pack for $(echo $1 | awk '{print toupper($0)}') was not found. Expected: ${pack_path}"
+    fi
+
+    local product_files_dir="${PUPPET_HOME}/modules/${1}/files"
+    if [ ! -f "${product_files_dir}/${2}-${3}.zip" ]; then
+        if [ ! -z $( find ${product_files_dir} -name ${2}-*.zip ) ]; then
+            echoError "$(echo ${1} | awk '{print toupper($0)}') pack(s) other than version ${3} has been found at ${product_files_dir} directory. Expected: ${2}-${3}.zip"
+            exit 1
+        else
+            echoError "$(echo ${1} | awk '{print toupper($0)}') ${3} pack was not found at ${product_files_dir} directory. Expected: ${2}-${3}.zip"
             exit 1
         fi
     fi
