@@ -22,7 +22,7 @@ source "${DIR}/base.sh"
 function showUsageAndExit () {
     echoError "Insufficient or invalid options provided!"
     echo
-    echoBold "Usage: ./push.sh -v [product-version] -r [registry-url]"
+    echoBold "Usage: ./push.sh -r [registry-url]"
     echo
 
     op_pversions=$(docker images | grep $product_name | awk '{print $1,"\t- ", $2}')
@@ -34,8 +34,6 @@ function showUsageAndExit () {
 
     echoBold "Options:"
     echo
-    echo -en "  -v\t"
-    echo "[REQUIRED] Product version of $(echo $product_name | awk '{print toupper($0)}')"
     echo -en "  -r\t"
     echo "[REQUIRED] Docker registry url."
     echo -en "  -i\t"

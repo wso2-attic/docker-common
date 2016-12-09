@@ -21,17 +21,29 @@ set -e
 provision_path=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source "${provision_path}/../../scripts/base.sh"
 
-jdk_archive=jdk-7u80-linux-x64.tar.gz
+function validateJDK() {
+    local jdk_archive=jdk-7u80-linux-x64.tar.gz
+    # Validate if files exist in the files folder
+    if [ ! -e "${provision_path}/files/${jdk_archive}" ]; then
+        echoError "A valid JDK distribution was not found at ${provision_path}/files folder. Expected: ${jdk_archive}"
+        exit 1
+    fi
+}
 
-# Validate if files exist in the files folder
-if [ ! -e "${provision_path}/files/${jdk_archive}" ]; then
-    echoError "A valid JDK distribution was not found at ${provision_path}/files folder. Expected: ${jdk_archive}"
-    exit 1
-fi
+function validateProductPack() {
+    if [ ! -f "${provision_path}/files/${product_name}-${product_version}.zip" ]; then
+        if [ ! -z $( find ${provision_path}/files -name ${product_name}-*.zip ) ]; then
+            echoError "$(echo $product_name | awk '{print toupper($0)}') pack(s) other than version ${product_version} has been found at ${provision_path}/files directory. Expected: ${product_name}-${product_version}.zip"
+            exit 1
+        else
+            echoError "$(echo $product_name | awk '{print toupper($0)}') ${product_version} pack was not found at ${provision_path}/files directory. Expected: ${product_name}-${product_version}.zip"
+            exit 1
+        fi
+    fi
+ }
 
-if [ ! -e "${provision_path}/files/${product_name}-${product_version}.zip" ]; then
-    echoError "$(echo $product_name | awk '{print toupper($0)}') ${product_version} pack was not found at ${provision_path}/files folder. Expected: ${product_name}-${product_version}.zip"
-    exit 1
-fi
+validateJDK
+
+validateProductPack
 
 export file_location=$provision_path/files

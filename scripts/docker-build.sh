@@ -34,7 +34,7 @@ source "${self_path}/base.sh"
 function showUsageAndExit() {
   echoError "Insufficient or invalid options provided!"
   echo
-  echoBold "Usage: ./build.sh -v [product-version]"
+  echoBold "Usage: ./build.sh"
   echo
 
   available_provisioning=$(listFiles ${self_path}/../provision)
@@ -42,10 +42,8 @@ function showUsageAndExit() {
 
   echoBold "Options:"
   echo
-  echo -en "  -v\t"
-  echo "[REQUIRED] Product version of $(echo $product_name | awk '{print toupper($0)}')"
   echo -en "  -l\t"
-  echo "[OPTIONAL] '|' separated $(echo $product_name | awk '{print toupper($0)}') profiles to build. \"default\" is selected if no value is specified."
+  echo "[OPTIONAL] '|' separated $(echo $product_name | awk '{print toupper($0)}') profiles to build. All the profiles are selected if no value is specified."
   echo -en "  -i\t"
   echo "[OPTIONAL] Docker image version."
   echo -en "  -e\t"
@@ -62,10 +60,13 @@ function showUsageAndExit() {
   echo "[OPTIONAL] Automatic yes to prompts; assume \"y\" (yes) as answer to all prompts and run non-interactively."
   echo -en "  -s\t"
   echo "[OPTIONAL] Platform to be used to run the Dockerfile (ex.: kubernetes). If not specified will assume the value as 'default'."
+  echo -en "  -p\t"
+  echo "[OPTIONAL] Deployment pattern number. If the pattern is not specified pattern \"1\" will be used."
   echo
 
-  echoBold "Ex: ./build.sh -v 1.10.0 -l worker|manager -o myorganization -i 1.0.0"
-  echoBold "Ex: ./build.sh -v 1.10.0 -t wso2am-customized"
+  echoBold "Ex: ./build.sh -p 2"
+  echoBold "Ex: ./build.sh -l worker|manager -o myorganization -i 1.0.0"
+  echoBold "Ex: ./build.sh -t wso2am-customized"
   echo
   exit 1
 }
@@ -96,12 +97,30 @@ function findHostIP() {
   done< <(LANG=C /sbin/ifconfig)
 }
 
+# ${1} product environment
+# ${2} product name
+# ${3} pattern number
+function getAllProfiles() {
+    local pattern_dir="${PUPPET_HOME}/hieradata/${1}/wso2/${2}/pattern-${3}/";
+    local profile_files=$( find "${pattern_dir}" -maxdepth 1 -mindepth 1 -name "*.yaml" \( ! -iname ".*" ! -iname "*.md" ! -iname "common.yaml" \)| rev | cut -d '/' -f1 | rev | awk NF )
+    read -a arr <<<${profile_files}
+
+    local profiles=""
+    for profile in "${arr[@]}"
+    do
+        local profile_name=$( echo "${profile}" | rev | cut -d "." -f2 | rev )
+        local profiles="${profiles}|${profile_name}"
+    done
+
+    echo ${profiles:1}
+}
+
 verbose=true
 provision_method="default"
 overwrite_v='n'
 platform='default'
 
-while getopts :r:n:v:d:l:i:o:e:t:s:m:qy FLAG; do
+while getopts :r:n:v:d:l:i:o:e:t:s:m:q:y:p: FLAG; do
   case $FLAG in
     r)
       provision_method=$OPTARG
@@ -142,6 +161,9 @@ while getopts :r:n:v:d:l:i:o:e:t:s:m:qy FLAG; do
     m)
       module_name=$OPTARG
       ;;
+    p)
+      pattern_no=$OPTARG
+      ;;
     \?)
       showUsageAndExit
       ;;
@@ -162,8 +184,12 @@ if [[ ! -z $organization_name ]]; then
 fi
 
 # Default values for optional args
+if [[ -z $pattern_no ]]; then
+  pattern_no="1"
+fi
+
 if [[ -z $product_profiles ]]; then
-  product_profiles="default"
+  product_profiles=$( getAllProfiles ${product_env} ${product_name} ${pattern_no} )
 fi
 
 if [[ -z $module_name ]]; then
@@ -302,6 +328,7 @@ for profile in "${profiles_array[@]}"; do
                 --build-arg WSO2_SERVER_VERSION=\"${product_version}\" \
                 --build-arg WSO2_SERVER_PROFILE=\"${profile}\" \
                 --build-arg WSO2_ENVIRONMENT=\"${product_env}\" \
+                --build-arg WSO2_DEPLOYMENT_PATTERN=\"${pattern_no}\" \
                 --build-arg HTTP_PACK_SERVER=\"${http_server_address}\" \
                 --build-arg PLATFORM=\"${platform}\" \
                 -t \"${image_id}\" \"${dockerfile_path}\""
