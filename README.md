@@ -1,14 +1,19 @@
-# WSO2 Dockerfiles
-WSO2 Dockerfiles define the resources and instructions to build the Docker images with the WSO2 products and runtime configurations.
+# WSO2 Docker Common
 
-## Try it out
+WSO2 Docker Common provides following artifacts needed for building WSO2 middleare Docker images:
 
-To try the WSO2 products on Docker simply follow the instructions in the README in the relevant product folder.
+- WSO2 Base Dockerfile
+- Bash scripts for default and Puppet based provisioning
+- Bash scripts for Docker build, push, run, stop and entrypoint
 
-## Detailed Configuration
+## How to Contribute
 
-* [Introduction] (https://docs.wso2.com/display/DF120/Introduction)
+* Please report issues in [Github](https://github.com/wso2/docker-common/issues)
+* Feel free to fork this repository and send [Pull Requests](https://github.com/wso2/docker-common/pulls)
 
-* [Build docker images] (https://docs.wso2.com/display/DF120/Building+Docker+Images)
+## Contact Us
 
-* [Run docker images] (https://docs.wso2.com/display/DF120/Running+WSO2+Docker+Images)
+Contact us via following mailing lists:
+
+* WSO2 Developers Mailing List: dev@wso2.org
+* WSO2 Architecture Mailing List: architecture@wso2.org
