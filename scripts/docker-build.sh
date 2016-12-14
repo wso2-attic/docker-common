@@ -189,7 +189,11 @@ if [[ -z $pattern_no ]]; then
 fi
 
 if [[ -z $product_profiles ]]; then
-  product_profiles=$( getAllProfiles ${product_env} ${product_name} ${pattern_no} )
+    if [[ $provision_method != "default" ]]; then
+        product_profiles=$( getAllProfiles ${product_env} ${product_name} ${pattern_no} )
+    else
+        product_profiles="default"
+    fi
 fi
 
 if [[ -z $module_name ]]; then
