@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.wso2.dockerfiles.common</groupId>
         <artifactId>wso2-dockerfiles-common</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>wso2base-dockerfile</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>WSO2 Base Docker Image</name>
 
     <properties>
