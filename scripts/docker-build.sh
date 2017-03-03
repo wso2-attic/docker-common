@@ -188,16 +188,16 @@ if [[ -z $pattern_no ]]; then
   pattern_no="1"
 fi
 
+if [[ -z $module_name ]]; then
+  module_name="${product_name}"
+fi
+
 if [[ -z $product_profiles ]]; then
     if [[ $provision_method != "default" ]]; then
-        product_profiles=$( getAllProfiles ${product_env} ${product_name} ${pattern_no} )
+        product_profiles=$( getAllProfiles ${product_env} ${module_name} ${pattern_no} )
     else
         product_profiles="default"
     fi
-fi
-
-if [[ -z $module_name ]]; then
-  module_name="${product_name}"
 fi
 
 provisioning_dir="${self_path}/../provision"
@@ -231,7 +231,7 @@ popd > /dev/null 2>&1
 docker_version=$(docker version)
 docker_version=$(echo "$docker_version" | grep 'Version:' | awk '{print $2}')
 min_required_docker_version=1.10.0
-validateDockerVersion "${docker_version}" "${min_required_docker_version}"
+#validateDockerVersion "${docker_version}" "${min_required_docker_version}"
 
 # Copy common files to Dockerfile context
 echoBold "Creating Dockerfile context..."

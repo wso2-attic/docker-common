@@ -20,7 +20,7 @@
 set -e
 
 # JDK version
-jdk_install_dir=/mnt/jdk-7u80
+jdk_install_dir=/mnt/jdk-8u112
 java_home_dir=/opt/java
 
 # Add wso2user
