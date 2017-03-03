@@ -62,7 +62,7 @@ wget -q -nv -rnH --level=0 -e robots=off --reject "index.html*" ${HTTP_PACK_SERV
 
 # Run Puppet agent in stand-alone mode
 echo "Running Puppet agent..."
-puppet apply --hiera_config=/etc/puppet/hiera.yaml /etc/puppet/manifests/site.pp
+puppet apply /etc/puppet/manifests/site.pp --hiera_config=/etc/puppet/hiera.yaml
 
 # Cleanup
 echo "Cleaning up packages and files no longer required..."
