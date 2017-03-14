@@ -1,6 +1,6 @@
 # WSO2 Docker Common
 
-WSO2 Docker Common provides following artifacts needed for building WSO2 middleare Docker images:
+WSO2 Docker Common provides following artifacts needed for building WSO2 middleware Docker images:
 
 - WSO2 Base Dockerfile
 - Bash scripts for default and Puppet based provisioning
