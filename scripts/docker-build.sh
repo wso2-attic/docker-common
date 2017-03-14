@@ -62,6 +62,8 @@ function showUsageAndExit() {
   echo "[OPTIONAL] Platform to be used to run the Dockerfile (ex.: kubernetes). If not specified will assume the value as 'default'."
   echo -en "  -p\t"
   echo "[OPTIONAL] Deployment pattern number. If the pattern is not specified pattern \"1\" will be used."
+  echo -en "  -m\t"
+  echo "[OPTIONAL] Puppet module name. If the module name is not specified \"product name\" will be used."
   echo
 
   echoBold "Ex: ./build.sh -p 2"
@@ -75,15 +77,20 @@ function timeout() {
     perl -e 'alarm shift; exec @ARGV' "$@";
 }
 
+# ${1} Current docker version
+# ${2} Minimum required docker version
 function validateDockerVersion(){
   IFS='.' read -r -a version_1 <<< "$1"
   IFS='.' read -r -a version_2 <<< "$2"
-  for ((i=0; i<${#version_1[@]}; i++)); do
-    if (( "${version_1[i]}" < "${version_2[i]}" )); then
-      echoError "Docker version should be equal to or greater than ${min_required_docker_version} to build WSO2 Docker images. Found ${docker_version}"
-      exit 1
+  if (( "${version_1[0]}" > "${version_2[0]}" )) ; then
+     return
+  elif (( "${version_1[0]}" == "${version_2[0]}" )) ; then
+    if(( "${version_1[1]}" >= "${version_2[1]}" )) ; then
+        return
     fi
-  done
+  fi
+  echoError "Docker version should be equal to or greater than ${min_required_docker_version} to build WSO2 Docker images. Found ${docker_version}"
+  exit 1
 }
 
 function findHostIP() {
@@ -231,7 +238,7 @@ popd > /dev/null 2>&1
 docker_version=$(docker version)
 docker_version=$(echo "$docker_version" | grep 'Version:' | awk '{print $2}')
 min_required_docker_version=1.10.0
-#validateDockerVersion "${docker_version}" "${min_required_docker_version}"
+validateDockerVersion "${docker_version}" "${min_required_docker_version}"
 
 # Copy common files to Dockerfile context
 echoBold "Creating Dockerfile context..."
