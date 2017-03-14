@@ -62,6 +62,8 @@ function showUsageAndExit() {
   echo "[OPTIONAL] Platform to be used to run the Dockerfile (ex.: kubernetes). If not specified will assume the value as 'default'."
   echo -en "  -p\t"
   echo "[OPTIONAL] Deployment pattern number. If the pattern is not specified pattern \"1\" will be used."
+  echo -en "  -m\t"
+  echo "[OPTIONAL] Puppet module name. If the module name is not specified \"product name\" will be used."
   echo
 
   echoBold "Ex: ./build.sh -p 2"
