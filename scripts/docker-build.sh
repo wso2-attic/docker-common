@@ -310,6 +310,11 @@ for profile in "${profiles_array[@]}"; do
     image_name_section="${image_name_section}-${platform}"
   fi
 
+  # set pattern no to image
+  if [[ ! -z $pattern_no ]]; then
+    image_name_section="${image_name_section}-pattern-${pattern_no}"
+  fi
+
   image_id="${image_name_section}:${image_version_section}"
 
   image_exists=$(docker images $image_id | wc -l)
