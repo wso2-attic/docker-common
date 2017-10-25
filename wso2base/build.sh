@@ -23,4 +23,4 @@ self_path=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source "${self_path}/../scripts/base.sh"
 
 echoBold "Building docker base image..."
-docker build -t wso2/wso2base ${self_path}
+docker build -t wso2/wso2base:ubuntu-16.04 ${self_path}
